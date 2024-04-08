@@ -1,5 +1,10 @@
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
+import GUI from 'lil-gui'
+import { RGBELoader } from 'three/examples/jsm/Addons.js'
+
+const gui = new GUI()
+
 
 /**
  * Base
@@ -75,12 +80,80 @@ gradientTexture.colorSpace = THREE.SRGBColorSpace
 // material.wireframe = true
 
 // MeshToonMaterial
-const material = new THREE.MeshToonMaterial()
-gradientTexture.generateMipmaps =false
-gradientTexture.minFilter = THREE.NearestFilter
-gradientTexture.magFilter = THREE.NearestFilter
-material.gradientMap = gradientTexture
+// const material = new THREE.MeshToonMaterial()
+// gradientTexture.generateMipmaps =false
+// gradientTexture.minFilter = THREE.NearestFilter
+// gradientTexture.magFilter = THREE.NearestFilter
+// material.gradientMap = gradientTexture
 
+// MeshStandardMaterial
+// const material = new THREE.MeshStandardMaterial()
+// material.roughness = 0
+// material.metalness = 1
+// material.map = colorTexture
+// material.aoMap = ambientTexture
+// material.aoMapIntensity =1
+// material.displacementMap = heightTexture
+// material.displacementScale = 0.1
+// material.roughnessMap = roughnessTexture
+// material.metalnessMap = metalnessTexture
+// material.normalMap = normalTexture
+// material.transparent = true
+// material.alphaMap = alphaTexture
+// // Debug
+// gui.add(material, 'roughness').min(0).max(1).step(.0001)
+// gui.add(material, 'metalness').min(0).max(1).step(.0001)
+
+// MeshPhysicalMaterial
+const material = new THREE.MeshPhysicalMaterial()
+material.roughness = 0
+material.metalness = 0
+// material.map = colorTexture
+// material.aoMap = ambientTexture
+// material.aoMapIntensity =1
+// material.displacementMap = heightTexture
+// material.displacementScale = 0.1
+// material.roughnessMap = roughnessTexture
+// material.metalnessMap = metalnessTexture
+// material.normalMap = normalTexture
+// material.transparent = true
+// material.alphaMap = alphaTexture
+// Debug
+gui.add(material, 'roughness').min(0).max(1).step(.0001)
+gui.add(material, 'metalness').min(0).max(1).step(.0001)
+
+// Clearcoat
+// material.clearcoat = 1
+// material.clearcoatRoughness = 0
+
+// gui.add(material, 'clearcoat').min(0).max(1).step(.0001)
+// gui.add(material, 'clearcoatRoughness').min(0).max(1).step(.0001)
+
+// Sheen
+// material.sheen = 1
+// material.sheenRoughness = 0.2
+// material.sheenColor.set(1, 1, 1)
+
+// gui.add(material, 'sheen').min(0).max(1).step(.0001)
+// gui.add(material, 'sheenRoughness').min(0).max(1).step(.0001)
+
+// Irridescnce
+// material.iridescence = 1
+// material.iridescenceIOR = 1
+// material.iridescenceThicknessRange = [100, 800]
+
+// gui.add(material, 'iridescence').min(0).max(1).step(.0001)
+// gui.add(material, 'iridescenceIOR').min(1).max(2.333).step(.0001)
+// gui.add(material.iridescenceThicknessRange, '1').min(1).max(1000).step(.0001)
+
+// Transmission
+material.transmission = 1
+material.ior = 1.5
+material.thickness = .5
+
+gui.add(material, 'transmission').min(0).max(1).step(.0001)
+gui.add(material, 'ior').min(0).max(10).step(.0001)
+gui.add(material, 'thickness').min(0).max(1).step(.0001)
 
 // Sphere geometry
 const geometry = new THREE.SphereGeometry( .5, 32, 16 ); 
@@ -90,6 +163,7 @@ sphere.position.x = -1.5
 // Plane geometry
 const planeGeometry = new THREE.PlaneGeometry( 1, 1 );
 const plane = new THREE.Mesh( planeGeometry, material );
+
 
 // Torus geometry
 const torusGeometry = new THREE.TorusGeometry( .4, .2, 16, 100 ); 
@@ -104,6 +178,15 @@ scene.add(ambientLight)
 const pointLight = new THREE.PointLight(0xffffff, 30)
 pointLight.position.z = 4
 scene.add(pointLight)
+
+// Environment Map
+
+const rgbeLoader = new RGBELoader()
+rgbeLoader.load('/textures/environmentMap/2k.hdr', (environmentMap)=>{
+    environmentMap.mapping = THREE.EquirectangularReflectionMapping
+    scene.background = environmentMap
+    scene.environment = environmentMap
+})
 
 /**
  * Sizes
